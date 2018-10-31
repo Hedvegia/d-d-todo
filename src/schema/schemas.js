@@ -43,3 +43,47 @@ export const GET_ONE_ITEM = gql`
     }
   }
 `
+
+export const UPDATE_ONE = gql`
+  mutation UpdateOne( $id: String, $input: ListInput ) {
+    updateOne(id: $id, input: $input) {
+      id
+      title
+      notes
+      state
+    }
+  }
+`
+
+export const GET_TODOS = gql`
+  {
+    getTodos {
+      id
+      title
+      notes
+      state
+    }
+  }
+`
+
+export const GET_PENDINGS = gql`
+  {
+    getPendings {
+      id
+      title
+      notes
+      state
+    }
+  }
+`
+
+export const GET_COMPLETEDS = gql`
+  {
+    getCompleteds {
+      id
+      title
+      notes
+      state
+    }
+  }
+`
