@@ -59,6 +59,18 @@
 
     </div>
 
+    <div>
+      <draggable element="div" class="delete" :options="dragOptions">
+        <transition-group name="delete" class="delete" tag="ul">
+          <li
+            class="deleteItem"
+            :key="'delete'"
+          >
+          </li>
+        </transition-group>
+      </draggable>
+    </div>
+
     <detail
       v-bind:item="item"
       :back="back"
@@ -113,12 +125,14 @@ export default {
   },
   methods: {
     onMove({ relatedContext, draggedContext }, event) {
-      console.log(relatedContext)
-      console.log(draggedContext)
       const relatedElement = relatedContext.element;
       const draggedElement = draggedContext.element;
       const state = event.target.id
       const id = draggedContext.element.id
+
+      if (state === '') {
+        this.deleteOne(id)
+      }
 
       this.$apollo.mutate({
         mutation: UPDATE_ONE,
@@ -192,6 +206,11 @@ export default {
 </script>
 
 <style>
+.deleteItem {
+  list-style-type: none;
+  border: none
+}
+
 p {
   margin-left: 0.5em;
   width: 70%;
@@ -212,6 +231,11 @@ p {
   color: rgb(0, 162, 255);
   cursor: pointer;
   transform: scale(0.9);
+}
+
+.delete {
+  height: 100%;
+  list-style-type: none;
 }
 
 </style>
