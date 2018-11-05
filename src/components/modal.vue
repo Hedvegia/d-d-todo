@@ -17,10 +17,10 @@
             <input @input="handleNotes($event.target.value)" placeholder="">
             <p class='title'>Completed: </p>
             <select v-model="selected">
-              <option disabled value=""></option>
+              <option disabled value="">todo</option>
+              <option>todo</option>
               <option>pending</option>
               <option>completed</option>
-              <option>todo</option>
             </select>
           </slot>
         </section>

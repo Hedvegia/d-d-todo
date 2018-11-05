@@ -5,21 +5,30 @@
     <div class="modal">
       <header class="modal-header">
         <slot name="header">
-          <h2>{{item === undefined ? 'title' : item.title}}</h2>
+          <h2 v-show="!isEdit">{{item === undefined ? 'title' : item.title}}</h2>
+          <input v-show="isEdit" @input="handleInput($event.target.value)" :value="item === undefined ? 'title' : item.title">
           <button class="button" v-on:click="back()">x</button>
         </slot>
       </header>
       <section class="modal-body">
         <slot name="body">
           <p class="title">notes: </p>
-          <p class="title">{{ item === undefined ? 'notes' : item.notes}}</p>
+          <p class="title" v-show="!isEdit">{{ item === undefined ? 'notes' : item.notes}}</p>
+          <input v-show="isEdit" @input="handleNotesInput($event.target.value)" :value=" item === undefined ? 'notes' : item.notes">
           <p class="title">state: </p>
-          <p class="title">{{item === undefined ? 'state' : item.state}}</p>
+          <p class="title" v-show="!isEdit">{{item === undefined ? 'state' : item.state}}</p>
+          <select v-show="isEdit" v-on:change="handleSelect($event.target.value)">
+            <option disabled value="">{{ item === undefined ? 'state' : item.state}}</option>
+            <option value="todo">todo</option>
+            <option value="pending">pending</option>
+            <option value="completed">completed</option>
+          </select>
         </slot>
       </section>
       <footer class="modal-footer">
         <slot name="footer">
-          <button class="modify" v-on:click="change(item.id)">edit</button>
+          <button v-show="!isEdit" class="modify" v-on:click="change()">edit</button>
+          <button v-show="isEdit" class="modify" v-on:click="saveChanges(item)">save</button>
         </slot>
       </footer>
     </div>
@@ -29,12 +38,7 @@
 <script>
 export default {
   name: 'Details',
-  props: ['isShow', 'back', 'item'],
-  methods: {
-    change(id) {
-      console.log(id)
-    }
-  }
+  props: ['isShow', 'back', 'item', 'handleInput', 'handleNotesInput', 'saveChanges', 'change', 'selected', 'notes', 'title', 'isEdit', 'handleSelect'],
 }
 </script>
 

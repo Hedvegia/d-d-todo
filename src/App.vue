@@ -26,7 +26,7 @@ export default {
   components: {
     Todo,
     Modal,
-    Detail
+    Detail,
   },
 }
 
@@ -72,6 +72,14 @@ h1 {
   padding-top: 0.5em;
 }
 
+.getTodos {
+  padding: 0;
+}
+
+span {
+  height: 4em;
+}
+
 .box {
   margin: 0.5em;
   width: 30%;
@@ -99,6 +107,7 @@ h1 {
   border: 1px solid rgba(128, 128, 128, 0.411);
   display: flex;
   flex-wrap: wrap;
+  cursor: move;
 }
 
 .flex {
