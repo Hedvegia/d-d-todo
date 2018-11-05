@@ -1,51 +1,64 @@
 <template>
   <div>
     <h4 v-if="loading">Loading...</h4>
+
     <div class="box">
       <p class="todo" >Todo: </p>
-      <draggable v-model="getTodos" class="dragArea">
+
+      <draggable class="getTodos" element="ul" v-model="getTodos" :options="dragOptions" :move="onMove" @start="isDragging=true" @end="isDragging=false">
         <transition-group>
-          <div
+          <li
             class="todos"
+            id="todo"
             v-for="item in getTodos"
             :key="item.id"
           >
             <p v-on:click="getDetails(item)">{{item.title}}</p>
             <i class="far fa-trash-alt" v-on:click="deleteOne(item.id)"></i>
-          </div>
+          </li>
         </transition-group>
       </draggable>
+
     </div>
+
     <div class="box">
       <p class="pending">Pending: </p>
-      <draggable v-model="getPendings" class="dragArea" :move="onMove">
-        <transition-group type="transition">
-          <div
+
+      <draggable class="pendings" element="span" v-model="getPendings" :options="dragOptions" :move="onMove">
+        <transition-group name="no" class="getTodos" tag="ul">
+          <li
             class="todos"
+            id="pending"
             v-for="item in getPendings"
             :key="item.id"
           >
             <p v-on:click="getDetails(item)">{{item.title}}</p>
             <i class="far fa-trash-alt" v-on:click="deleteOne(item.id)"></i>
-          </div>
+          </li>
         </transition-group>
       </draggable>
+
     </div>
+
     <div class="box">
       <p class="completed">Completed: </p>
-      <draggable v-model="getCompleteds" class="dragArea">
-        <transition-group>
-          <div
+
+      <draggable element="span" v-model="getCompleteds" :options="dragOptions" :move="onMove">
+        <transition-group name="no" class="getTodos" tag="ul">
+          <li
             class="todos"
+            id="completed"
             v-for="item in getCompleteds"
             :key="item.id"
           >
             <p v-on:click="getDetails(item)">{{item.title}}</p>
             <div class="far fa-trash-alt" v-on:click="deleteOne(item.id)"></div>
-          </div>
+          </li>
         </transition-group>
       </draggable>
+
     </div>
+
     <detail
       v-bind:item="item"
       :back="back"
@@ -76,12 +89,15 @@ export default {
       getTodos: [],
       getPendings: [],
       getCompleteds: [],
+      getItems: [],
       isShow: false,
       item: {},
       title: "",
       notes: "",
       selected: "",
-      isEdit: false
+      isEdit: false,
+      editable: true,
+      isDragging: false,
     }
   },
   apollo: {
@@ -96,12 +112,20 @@ export default {
     }
   },
   methods: {
-    onMove({ relatedContext, draggedContext }) {
+    onMove({ relatedContext, draggedContext }, event) {
+      console.log(relatedContext)
+      console.log(draggedContext)
       const relatedElement = relatedContext.element;
       const draggedElement = draggedContext.element;
-      return (
-        (!relatedElement || !relatedElement.fixed) && !draggedElement.fixed
-      );
+      const state = event.target.id
+      const id = draggedContext.element.id
+
+      this.$apollo.mutate({
+        mutation: UPDATE_ONE,
+        variables: { id: id, input: { state: state }}
+      })
+      .then(response => response)
+      .catch(err => err)
     },
     deleteOne(id) {
       this.$apollo.mutate({
@@ -114,6 +138,7 @@ export default {
       .catch(err => swal({ title: "Something happened.:(", icon: "error" }))
     },
     getDetails(item) {
+      console.log(Object.getOwnPropertyDescriptor(item, 'title'))
       this.item = item,
       this.isShow = true
     },
@@ -149,6 +174,14 @@ export default {
       this.title = ""
       this.notes = ""
       this.selected = ""
+    },
+  },
+  computed: {
+    dragOptions() {
+      return {
+        group: "description",
+        disabled: !this.editable
+      };
     },
   },
   components: {
